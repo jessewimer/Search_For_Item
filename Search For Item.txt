@@ -1,0 +1,64 @@
+Sub SearchForItem()
+
+    Application.ScreenUpdating = False
+    Sheets("Saved Orders").Unprotect
+    Sheets("Saved Orders").Visible = True
+    Sheets("Saved Orders").Select
+    
+    Dim searchNumber As Integer
+    Dim lastRow As Long, lastCol As Long
+    Dim i As Long, j As Long
+    Dim finalizedOrders As String, pendingOrders As String, pending As String
+    
+    pending = "p"
+    searchNumber = Range("SEARCH_NUM").Value
+    lastRow = Worksheets("Saved Orders").Cells(Rows.Count, "B").End(xlUp).Row
+    
+    For i = 1 To lastRow
+        lastCol = ActiveSheet.Cells(i, Columns.Count).End(xlToLeft).column
+        For j = 6 To lastCol
+            If InStr(1, CStr(Cells(i, j).Value), CStr(searchNumber)) > 0 Then
+                If InStr(1, Rows.Cells(i, 1).Value, pending, vbTextCompare) > 0 Then
+                    If InStr(pendingOrders, CStr(Cells(i, 3).Value)) > 0 Then
+                        Exit For
+                    End If
+                    pendingOrders = pendingOrders & Cells(i, 3).Value & vbCrLf
+                    Exit For
+                
+                Else
+                    If InStr(finalizedOrders, CStr(Cells(i, 3).Value)) > 0 Then
+                        Exit For
+                    End If
+                    finalizedOrders = finalizedOrders & Cells(i, 3).Value & vbCrLf
+                    Exit For
+                    
+                End If
+        End If
+        
+        Next j
+        
+    Next i
+
+    If Len(pendingOrders) > 0 Or Len(finalizedOrders) > 0 Then
+        If Len(pendingOrders) = 0 Then
+            finalizedOrders = Left(finalizedOrders, Len(finalizedOrders) - 2)
+            MsgBox "FINALIZED ORDERS:" & vbCrLf & vbCrLf & finalizedOrders
+        ElseIf Len(finalizedOrders) = 0 Then
+            pendingOrders = Left(pendingOrders, Len(pendingOrders) - 2)
+            MsgBox "Pending Orders:" & vbCrLf & vbCrLf & pendingOrders
+        Else
+            MsgBox "PENDING ORDERS:" & vbCrLf & pendingOrders & vbCrLf & vbCrLf & "FINALIZED ORDERS:" & vbCrLf & finalizedOrders
+        End If
+
+    Else
+        MsgBox "The item was not found on any racks."
+    
+    End If
+
+    Sheets("Reports").Select
+    Sheets("Saved Orders").Protect
+    Sheets("Saved Orders").Visible = False
+
+    Application.ScreenUpdating = True
+    
+End Sub
