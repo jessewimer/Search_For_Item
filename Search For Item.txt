@@ -1,6 +1,7 @@
 Sub SearchForItem()
 
     Application.ScreenUpdating = False
+    
     Sheets("Saved Orders").Unprotect
     Sheets("Saved Orders").Visible = True
     Sheets("Saved Orders").Select
@@ -24,19 +25,15 @@ Sub SearchForItem()
                     End If
                     pendingOrders = pendingOrders & Cells(i, 3).Value & vbCrLf
                     Exit For
-                
                 Else
                     If InStr(finalizedOrders, CStr(Cells(i, 3).Value)) > 0 Then
                         Exit For
                     End If
                     finalizedOrders = finalizedOrders & Cells(i, 3).Value & vbCrLf
-                    Exit For
-                    
+                    Exit For  
                 End If
-        End If
-        
-        Next j
-        
+        End If 
+        Next j  
     Next i
 
     If Len(pendingOrders) > 0 Or Len(finalizedOrders) > 0 Then
@@ -52,7 +49,6 @@ Sub SearchForItem()
 
     Else
         MsgBox "The item was not found on any racks."
-    
     End If
 
     Sheets("Reports").Select
