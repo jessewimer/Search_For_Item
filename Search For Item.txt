@@ -2,33 +2,49 @@ Sub SearchForItem()
 
     Application.ScreenUpdating = False
     
-    Sheets("Saved Orders").Unprotect
-    Sheets("Saved Orders").Visible = True
-    Sheets("Saved Orders").Select
+    'Commented out the next three lines because I don't think the sheet needs to be opened or unprotected for this code to work
+    'Sheets("Saved Orders").Unprotect
+    'Sheets("Saved Orders").Visible = True
+    'Sheets("Saved Orders").Select
     
     Dim searchNumber As Integer
     Dim lastRow As Long, lastCol As Long
     Dim i As Long, j As Long
     Dim finalizedOrders As String, pendingOrders As String, pending As String
     
+    'the character 'p' is part of an order number if that order is pending
+    'i.e. P-4306, as opposed to just 4306 when the order is finalized
     pending = "p"
+    
+    'setting searchNumber to the value of a named cell where the user types in the desired item number
     searchNumber = Range("SEARCH_NUM").Value
+    
+    'determining the last row that contains order data
     lastRow = Worksheets("Saved Orders").Cells(Rows.Count, "B").End(xlUp).Row
     
+    'this section searches through the saved orders of the sheet looking for the searchNumber
+    'outer for loop searches row by row
     For i = 1 To lastRow
-        lastCol = ActiveSheet.Cells(i, Columns.Count).End(xlToLeft).column
+        lastCol = Worksheets("Saved Orders").Cells(i, Columns.Count).End(xlToLeft).column
+        'inner for loop searches through each column within each row, starting in column 6 because that is the first column with item data
         For j = 6 To lastCol
+            'if statement determines if the searchNumber was found
             If InStr(1, CStr(Cells(i, j).Value), CStr(searchNumber)) > 0 Then
+                'nested if/else statement that determines whether or not the item was found in a pending or finalized order
                 If InStr(1, Rows.Cells(i, 1).Value, pending, vbTextCompare) > 0 Then
+                    'this if statement determines whether or not the store with a pending order has already been added to the list
                     If InStr(pendingOrders, CStr(Cells(i, 3).Value)) > 0 Then
                         Exit For
                     End If
+                    'adding the store name to the list of stores that have pending orders containing the searchNumber
                     pendingOrders = pendingOrders & Cells(i, 3).Value & vbCrLf
                     Exit For
                 Else
+                    'determines wether or not the store with a finalized order has already been added to the list 
                     If InStr(finalizedOrders, CStr(Cells(i, 3).Value)) > 0 Then
                         Exit For
                     End If
+                    'adding the store nameto the list of stores that have finalized orders containing the searchNumber
                     finalizedOrders = finalizedOrders & Cells(i, 3).Value & vbCrLf
                     Exit For  
                 End If
@@ -36,6 +52,7 @@ Sub SearchForItem()
         Next j  
     Next i
 
+    'this section prints out the order numbers to a message box
     If Len(pendingOrders) > 0 Or Len(finalizedOrders) > 0 Then
         If Len(pendingOrders) = 0 Then
             finalizedOrders = Left(finalizedOrders, Len(finalizedOrders) - 2)
@@ -48,12 +65,12 @@ Sub SearchForItem()
         End If
 
     Else
-        MsgBox "The item was not found on any racks."
+        MsgBox "The item was not found."
     End If
 
-    Sheets("Reports").Select
-    Sheets("Saved Orders").Protect
-    Sheets("Saved Orders").Visible = False
+    'Sheets("Reports").Select
+    'Sheets("Saved Orders").Protect
+    'Sheets("Saved Orders").Visible = False
 
     Application.ScreenUpdating = True
     
