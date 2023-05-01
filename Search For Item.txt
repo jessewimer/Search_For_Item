@@ -2,10 +2,9 @@ Sub SearchForItem()
 
     Application.ScreenUpdating = False
     
-    'Commented out the next three lines because I don't think the sheet needs to be opened or unprotected for this code to work
-    'Sheets("Saved Orders").Unprotect
-    'Sheets("Saved Orders").Visible = True
-    'Sheets("Saved Orders").Select
+    Sheets("Saved Orders").Unprotect
+    Sheets("Saved Orders").Visible = True
+    Sheets("Saved Orders").Select
     
     Dim searchNumber As Integer
     Dim lastRow As Long, lastCol As Long
@@ -68,9 +67,9 @@ Sub SearchForItem()
         MsgBox "The item was not found."
     End If
 
-    'Sheets("Reports").Select
-    'Sheets("Saved Orders").Protect
-    'Sheets("Saved Orders").Visible = False
+    Sheets("Reports").Select
+    Sheets("Saved Orders").Protect
+    Sheets("Saved Orders").Visible = False
 
     Application.ScreenUpdating = True
     
